@@ -1,0 +1,63 @@
+CREATE TABLE Customer
+(
+	CustomerID INT NOT NULL IDENTITY(1,1),
+	Name VARCHAR(50)
+);
+
+ALTER TABLE Customer
+ADD CONSTRAINT PK_Customer PRIMARY KEY (CustomerId);
+
+CREATE TABLE FruitType
+(
+	FruitTypeId INT NOT NULL IDENTITY(1,1),
+	Description VARCHAR(15)
+);
+
+ALTER TABLE FruitType
+ADD CONSTRAINT PK_FruitType PRIMARY KEY (FruitTypeId);
+
+CREATE TABLE Fruit
+(
+	FruitId INT NOT NULL IDENTITY(1,1),
+	FruitTypeId INT,
+	Price DECIMAL
+);
+
+ALTER TABLE Fruit
+ADD CONSTRAINT PK_Fruit PRIMARY KEY (FruitId);
+
+ALTER TABLE Fruit
+ADD CONSTRAINT FK_Fruit_FruitType 
+FOREIGN KEY (FruitTypeId)
+REFERENCES FruitType(FruitTypeId);
+
+CREATE TABLE SellType
+(
+	SellTypeId INT NOT NULL IDENTITY(1,1),
+	Description VARCHAR(15)
+);
+
+ALTER TABLE SellType
+ADD CONSTRAINT PK_SellType PRIMARY KEY (SellTypeId);
+
+CREATE TABLE Buy
+(
+	BuyId INT NOT NULL IDENTITY(1,1),
+	CustomerId INT,
+	FruitId INT,
+	Quantity INT,
+	TotalPrice DECIMAL
+)
+
+ALTER TABLE Buy
+ADD CONSTRAINT PK_Buy PRIMARY KEY (BuyId);
+
+ALTER TABLE Buy
+ADD CONSTRAINT FK_Buy_Customer 
+FOREIGN KEY (CustomerId)
+REFERENCES Customer(CustomerId);
+
+ALTER TABLE Fruit
+ADD CONSTRAINT FK_Buy_Product 
+FOREIGN KEY (FruitId)
+REFERENCES Fruit(FruitId);

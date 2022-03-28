@@ -6,6 +6,7 @@ using FruitShop.V1.Controllers.Fruits.Service.Interfaces;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FruitShop.V1.Controllers.Fruits.Service
 {
@@ -13,13 +14,13 @@ namespace FruitShop.V1.Controllers.Fruits.Service
     {
         private readonly IRepository<Fruit> _fruitRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger _logger;
 
-
-        public FruitService(IRepository<Fruit> fruitRepository, IUnitOfWork unitOfWork)
+        public FruitService(IRepository<Fruit> fruitRepository, IUnitOfWork unitOfWork, ILogger logger)
         {
             _fruitRepository = fruitRepository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public FruitResponse Add(FruitRequest fruitRequest)
@@ -34,22 +35,20 @@ namespace FruitShop.V1.Controllers.Fruits.Service
 
                 _fruitRepository.Add(fruit);
                 _unitOfWork.SaveChanges();
-                logger.Info("Correct Added");
+                _logger.Info("Correct Added");
                 return new FruitResponse(fruit);
             }
             catch (Exception)
             {
-                logger.Error("Impossible Add");
+                _logger.Error("Impossible Add");
                 throw;
             }
         }
 
         public IEnumerable<FruitResponse> GetAll()
         {
-            foreach (var fruit in _fruitRepository.GetAll())
-            {
-                yield return new FruitResponse(fruit);
-            }
+            return from fruit in _fruitRepository.GetAll()
+                   select new FruitResponse(fruit);
         }
 
         public FruitResponse GetFruit(int fruitId)
@@ -57,12 +56,12 @@ namespace FruitShop.V1.Controllers.Fruits.Service
             try
             {
                 var currentFruit = _fruitRepository.Get(fruitId);
-                logger.Info("Correct Get");
+                _logger.Info("Correct Get");
                 return new FruitResponse(currentFruit);
             }
             catch (Exception)
             {
-                logger.Error("Imposible Get");
+                _logger.Error("Imposible Get");
                 throw;
             }
         }
@@ -75,15 +74,15 @@ namespace FruitShop.V1.Controllers.Fruits.Service
 
                 if (_unitOfWork.SaveChanges() > 0)
                 {
-                    logger.Info("Correct Deleted");
+                    _logger.Info("Correct Deleted");
                     return true;
                 }
-                logger.Info("Incorrect Deleted");
+                _logger.Info("Incorrect Deleted");
                 return false;
             }
             catch (Exception)
             {
-                logger.Error("Error");
+                _logger.Error("Error");
                 throw;
             }
         }
